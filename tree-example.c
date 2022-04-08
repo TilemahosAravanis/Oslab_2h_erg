@@ -16,43 +16,38 @@ void fork_procs(struct tree_node *ptr){
 	change_pname(ptr->name);
 
 	uint k=ptr->nr_children;
+
 	if(k==0){
 		sleep(SLEEP_PROC_SEC);
 		exit(1);
 	}
+
 	else if(k>0){
 
 		pid_t pd; 
 	    int status;
 
-		pd=fork();
-
-		if (pd< 0) {
-			/* fork failed */
-            perror("fork");
-            exit(1);
-        }
-        if (pd== 0) {         
-			for(int i=0; i<k; i++){
-				fork_procs(ptr->children+i);
-				
-			}
-			/*exit(1);*/
+		for(int i=0; i<k; i++){
+			pd=fork();
+		
+			if (pd< 0) {
+				/* fork failed */
+				perror("fork");
+            	exit(1);
+        	}
+        	if (pd== 0) {         
+				fork_procs(ptr->children+i);			
+			}	/*exit(1);*/
 		}
 
-	pd = wait(&status);
-    	explain_wait_status(pd, status);
+		pd = wait(&status);
 
-	}
-	
-	
+	}		
     /*exit(1);*/
-	
-	
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
+
 	struct tree_node *root;
 
 	if (argc != 2) {
@@ -84,10 +79,8 @@ int main(int argc, char *argv[])
 	/* Print the process tree-root at pid */
 	show_pstree(pid);
 
-
     /* Wait for the root of the process tree to terminate */
-    pid = wait(&status);
-    explain_wait_status(pid, status);
+    pid = wait(&status); 
 
 	return 0;
 }
