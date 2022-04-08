@@ -1,7 +1,7 @@
 C = gcc
 CFLAGS = -Wall -O2
 
-all: fork-given-tree tree-example
+all: fork-given-tree fork-arbitrary-tree
 
 fork-given-tree: fork-given-tree.o proc-common.o
 	$(CC) -o fork-given-tree fork-given-tree.o proc-common.o
@@ -12,14 +12,14 @@ proc-common.o: proc-common.c proc-common.h
 fork-given-tree.o: fork-given-tree.c proc-common.h
 	$(CC) $(CFLAGS) -o fork-given-tree.o -c fork-given-tree.c
 
-tree-example: tree-example.o tree.o proc-common.o
-	$(CC) -o tree-example tree-example.o tree.o proc-common.o
+fork-arbitrary-tree: fork-arbitrary-tree.o tree.o proc-common.o
+	$(CC) -o fork-arbitrary-tree fork-arbitrary-tree.o tree.o proc-common.o
 
 tree.o: tree.c tree.h proc-common.h
 	$(CC) $(CFLAGS) -o tree.o -c tree.c 
 
-tree-example.o: tree-example.c tree.h proc-common.h
-	$(CC) $(CFLAGS) -o tree-example.o -c tree-example.c 
+fork-arbitrary-tree.o: fork-arbitrary-tree.c tree.h proc-common.h
+	$(CC) $(CFLAGS) -o fork-arbitrary-tree.o -c fork-arbitrary-tree.c 
 
 clean:
-	rm -f proc-common.o fork-given-tree.o tree.o tree-example.o
+	rm -f proc-common.o fork-given-tree.o tree.o fork-arbitrary-tree.o
