@@ -9,46 +9,55 @@
 #include "tree.h"
 #include "proc-common.h"
 
-void fork_procs(struct tree_node *root)
-{
-        /*
-         * Start
-         */
+void fork_procs(struct tree_node *ptr){
+
         printf("PID = %ld, name %s, starting...\n",
-                        (long)getpid(), root->name);
-        change_pname(root->name);
+                        (long)getpid(), ptr->name);
+        change_pname(ptr->name);
+        uint k = ptr->nr_children;
 
-        /* ... */
+        pid_t pid[k];
+        int status;
+        int i;
 
-        /*
-         * Suspend Self
-         */
+        if(k>0){
+                for(i=0; i<k; i++){
+                        pid[i] = fork();
+                        if (pid[i] <  0) {
+                                /* fork failed */
+                                perror("fork");
+                                exit(1);
+                        }
+                        if (pid[i] == 0) {
+                                fork_procs(ptr->children+i);
+                        }
+                }
+        }
+
+        // Waits for every children to stop
+        wait_for_ready_children(k);
+
+        // Stops and waits to be awakened by father
         raise(SIGSTOP);
+
+        // These messages are Preordered (DFS)
         printf("PID = %ld, name = %s is awake\n",
-                (long)getpid(), root->name);
+                        (long)getpid(), ptr->name);
 
-        /* ... */
-
-        /*
-         * Exit
-         */
+        for(i=0; i<k; i++){
+                // Awakens child and waits for it's termination
+                kill(pid[i], SIGCONT);
+                                // printf("%s: waiting for %s to terminate...\n", ptr->name, (ptr->children+i)->name);
+                pid[i] = waitpid(pid[i], &status, 0);
+                explain_wait_status(pid[i], status);
+        }
+        // These messages are Postordered (DFS)
+        printf("%s: Exiting...\n",ptr->name);
         exit(0);
 }
-/*
- * The initial process forks the root of the process tree,
- * waits for the process tree to be completely created,
- * then takes a photo of it using show_pstree().
- *
- * How to wait for the process tree to be ready?
- * In ask2-{fork, tree}:
- *      wait for a few seconds, hope for the best.
- * In ask2-signals:
- *      use wait_for_ready_children() to wait until
- *      the first process raises SIGSTOP.
- */
 
 int main(int argc, char *argv[]){
-        
+
         struct tree_node *root;
 
         if (argc < 2){
@@ -56,11 +65,9 @@ int main(int argc, char *argv[]){
                 exit(1);
         }
 
-        /* Read tree into memory */
         root = get_tree_from_file(argv[1]);
         print_tree(root);
 
-        /* Fork root of process tree */
         pid_t pid;
         int status;
         pid = fork();
@@ -73,24 +80,20 @@ int main(int argc, char *argv[]){
                 fork_procs(root);
                 exit(1);
         }
-                /*
-         * Father
-         */
-        /* for ask2-signals */
+
         wait_for_ready_children(1);
 
-        /* for ask2-{fork, tree} */
-        /* sleep(SLEEP_TREE_SEC); */
-
-        /* Print the process tree root at pid */
         show_pstree(pid);
 
         /* for ask2-signals */
+
         kill(pid, SIGCONT);
 
         /* Wait for the root of the process tree to terminate */
+
         wait(&status);
         explain_wait_status(pid, status);
 
         return 0;
 }
+
