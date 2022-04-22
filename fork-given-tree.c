@@ -127,7 +127,8 @@ int main(void)
 
         /* Print the process tree-root at pid */
         show_pstree(pid);
-
+        //show_pstree(getpid());
+        
         /* Wait for the root of the process tree to terminate */
         pid = wait(&status);
         explain_wait_status(pid, status);
