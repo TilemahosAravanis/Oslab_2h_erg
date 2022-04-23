@@ -43,8 +43,8 @@ void fork_procs(struct tree_node *ptr){
                 }
 
                 for(i=0; i<k; i++){
-                        pid = waitpid(-1,&status,0); // I do not print waiting messages for certain children-let the "fastest" terminate first
-                        explain_wait_status(pid, status);
+                        pid[i] = waitpid(-1,&status,0); // I do not print waiting messages for certain children-let the "fastest" terminate first
+                        explain_wait_status(pid[i], status);
                 }
 
 		printf("%s: Exiting...\n",ptr->name);
