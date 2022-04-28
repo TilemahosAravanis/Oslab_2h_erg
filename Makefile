@@ -1,7 +1,7 @@
 C = gcc
 CFLAGS = -Wall -O2
 
-all: fork-given-tree fork-arbitrary-tree signals pipe-example aaa
+all: fork-given-tree fork-arbitrary-tree signals pipes
 
 fork-given-tree: fork-given-tree.o proc-common.o
 	$(CC) -o fork-given-tree fork-given-tree.o proc-common.o
@@ -24,22 +24,14 @@ fork-arbitrary-tree.o: fork-arbitrary-tree.c tree.h
 signals: signals.o tree.o proc-common.o
 	$(CC) -o signals signals.o tree.o proc-common.o
 
-
 signals.o: signals.c  tree.h proc-common.h
 	$(CC) $(CFLAGS) -o signals.o -c signals.c
 
+pipes: pipes.o tree.o proc-common.o
+	$(CC) -o pipes pipes.o tree.o proc-common.o
 
-pipe-example: pipe-example.o proc-common.o
-	$(CC) -o pipe-example pipe-example.o proc-common.o
-
-pipe-example.o: pipe-example.c proc-common.h
-	$(CC) $(CFLAGS) -o pipe-example.o -c pipe-example.c
-
-aaa: aaa.o tree.o proc-common.o
-	$(CC) -o aaa aaa.o tree.o proc-common.o
-
-aaa.o: aaa.c tree.h 
-	$(CC) $(CFLAGS) -o aaa.o -c aaa.c
+pipes.o: pipes.c tree.h 
+	$(CC) $(CFLAGS) -o pipes.o -c pipes.c
 
 clean:
-	rm -f proc-common.o fork-given-tree.o  fork-arbitrary-tree.o tree.o signals.o pipe-example.o aaa.o
+	rm -f proc-common.o fork-given-tree.o  fork-arbitrary-tree.o tree.o signals.o pipes.o
