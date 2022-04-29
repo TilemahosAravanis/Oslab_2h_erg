@@ -163,7 +163,7 @@ int main(int argc, char *argv[]){
         explain_wait_status(pid, status);
         close(pfd[0]);
         close(pfd[1]);
-        printf("Apotelesma=%i\n", val-'0'); 
+        printf("Result%i\n", val-'0'); 
 
         return 0;
 }
