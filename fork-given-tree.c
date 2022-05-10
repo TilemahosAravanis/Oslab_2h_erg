@@ -70,14 +70,15 @@ void fork_procs(void)
                 exit(1);
         }
         if (pC == 0) {
-                /* In child process */
+                /* c in process */
                  change_pname("C");
                  printf("C: Sleeping...\n");
                  sleep(SLEEP_PROC_SEC);
                  printf("C: Exiting...\n");
                  exit(17);
         }
-                printf("A: waiting for C to terminate...\n");
+
+        printf("A: waiting for C to terminate...\n");
         pC = waitpid(pC, &status, 0);
         explain_wait_status(pC, status);
 
@@ -90,23 +91,12 @@ void fork_procs(void)
         exit(16);
 }
 
-/*
- * The initial process forks the root of the process tree,
- * waits for the process tree to be completely created,
- * then takes a photo of it using show_pstree().
- *
- * How to wait for the process tree to be ready?
- * In ask2-{fork, tree}:
- *      wait for a few seconds, hope for the best.
- */
-
 int main(void)
 {
         pid_t pid;
         int status;
 
        /* Fork root of process tree */
-
         fprintf(stderr, "A: Is being created...\n");
         pid = fork();
         if (pid < 0) {
@@ -122,12 +112,10 @@ int main(void)
          * Father
          */
 
-        /* for ask2-{fork, tree} */
         sleep(SLEEP_TREE_SEC);
 
         /* Print the process tree-root at pid */
-        show_pstree(pid);
-        //show_pstree(getpid());
+        show_pstree(pid);  // show_pstree(getpid());
         
         /* Wait for the root of the process tree to terminate */
         pid = wait(&status);

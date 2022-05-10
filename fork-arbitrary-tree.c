@@ -24,26 +24,26 @@ void fork_procs(struct tree_node *ptr){
         }
 
         else if(k>0){
-                pid_t pid[k];
+                pid_t pid;
                 int status;
 
                 int i;
                 for(i=0; i<k; i++){
 
                         fprintf(stderr, "%s: Is being created...\n",(ptr->children+i)->name);
-                        pid[i] = fork();
-                        if (pid[i] <  0) {
+                        pid = fork();
+                        if (pid <  0) {
                                 /* fork failed */
                                 perror("fork");
                                 exit(1);
                         }
-                        if (pid[i] == 0) {
+                        if (pid== 0) {
                                 fork_procs(ptr->children+i);
                         }
                 }
 
                 for(i=0; i<k; i++){
-                        pid = waitpid(-1,&status,0); // I do not print waiting messages for certain children-let the "fastest" terminate first
+                        pid = waitpid(-1,&status,0); // We do not print waiting messages for certain children-let the "fastest" terminate first
                         explain_wait_status(pid, status);
                 }
 
@@ -79,13 +79,10 @@ int main(int argc, char *argv[]){
                 exit(1);
         }
 
-        /* for ask2-{fork, tree} */
         sleep(SLEEP_TREE_SEC);
 
-        /* Print the process tree-root at pid */
         show_pstree(pid);
 
-        /* Wait for the root of the process tree to terminate */
         pid = wait(&status);
         explain_wait_status(pid, status);
 

@@ -47,7 +47,7 @@ void fork_procs(struct tree_node *ptr){
         for(i=0; i<k; i++){
                 // Awakens child and waits for it's termination
                 kill(pid[i], SIGCONT);
-                                // printf("%s: waiting for %s to terminate...\n", ptr->name, (ptr->children+i)->name);
+                // printf("%s: waiting for %s to terminate...\n", ptr->name, (ptr->children+i)->name);
                 pid[i] = waitpid(pid[i], &status, 0);
                 explain_wait_status(pid[i], status);
         }
@@ -85,12 +85,9 @@ int main(int argc, char *argv[]){
 
         show_pstree(pid);
 
-        /* for ask2-signals */
-
         kill(pid, SIGCONT);
 
         /* Wait for the root of the process tree to terminate */
-
         wait(&status);
         explain_wait_status(pid, status);
 
